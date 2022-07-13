@@ -221,62 +221,6 @@ class JavaClassBlock(CodeBlock):
 
         out += ["\t" * self.__tab_count + "}"]
         return out
-        
-        
-'''
-# class JavaClassCodeBlock(CodeSegment):
-
-#     __Class_Regex = "class [a-zA-Z0-9]+(\([a-zA-Z0-9]*\))?:"
-
-#     def __init__(self, code: list[str]) -> None:
-#         super().__init__(self)
-#         self.code = code
-#         self.class_name = ""
-#         self.class_inherits = None
-#         self.__privacy = 0
-#         self.__is_static = False
-
-#         self.segments: list[CodeSegment] = []
-
-#         self.__out: list[str] | None = None
-
-#     def decode(self) -> None:
-#         for line in self.code:
-#             # If has py2java comment "###STATIC" then becomes static
-#             if re.match(line.strip(), self.__STATIC_CUSTOM_Regex):
-#                 self.__is_static = True
-#                 continue
-#             # If is class line 
-#             if re.match(line.strip(), self.__Class_Regex):
-#                 self.decode_class_line(line)
-#                 continue
-            
-
-#     def get_output(self) -> list[str]:
-#         if self.__out:
-#             return self.__out
-        
-#         self.construct_output()
-#         return self.__out
-
-#     def construct_output(self) -> None:
-#         self.__out = []
-
-
-#     def decode_class_line(self, line) -> None:
-#         self.class_name, self.class_inherits = self.__get_class_details(line)
-
-            
-#     @staticmethod
-#     def __get_class_details(code: str) -> tuple[str, str | None]:
-#         class_name_and_beyond = code.split(" ")[1]
-#         class_name_and_beyond = class_name_and_beyond.replace(":", "").replace(")", "").replace("(", " ")
-#         class_name_and_inherit = class_name_and_beyond.split(" ")
-#         if len(class_name_and_inherit) == 2:
-#             [class_name, inherit] = class_name_and_inherit
-#             return class_name, inherit
-#         return class_name, None
-'''
 
 class JavaGenerator:
 
