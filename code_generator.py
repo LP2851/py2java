@@ -1,6 +1,7 @@
 from __future__ import annotations
 from line_data import LineData, CODE_CONVERTER_COMMANDS, DataCodes
 from java_generation import JavaGenerator
+from settings import Settings
 
 DEBUG = True
 
@@ -65,9 +66,11 @@ class CodeGenerator:
         self.__pre_process_code()
         gen = self.__process_code()
         code = gen.get_generated_code()
-        print()
-        for line in code:
-            print(line)
+        
+        if Settings.VERBOSE:
+            print()
+            for line in code:
+                print(line)
 
     def get_output(self) -> str | None:
         if not self.__input:
