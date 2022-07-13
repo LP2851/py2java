@@ -20,7 +20,7 @@ class Settings:
 
     # Output Settings:
     VERBOSE = True
-    OUTPUT_FOLDER_NAME = "./current_generated_files/"
+    OUTPUT_FOLDER_NAME = "./out/"
 
     # Extra Comments in Files:
     CREATE_SOURCE_COMMENT = True
