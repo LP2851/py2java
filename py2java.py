@@ -28,11 +28,15 @@ def get_file_data(file: str) -> list[str]:
         out = f.readlines()
     return out
 
-def save_to_file(code:str, class_name:str,) -> None:
+def save_to_file(code:str, class_name:str, source_file:str) -> None:
     if not os.path.exists(Settings.OUTPUT_FOLDER_NAME):
         makedirs(Settings.OUTPUT_FOLDER_NAME)
     with open(f"{Settings.OUTPUT_FOLDER_NAME}{class_name}.java", "w") as f:
-        f.write(code)
+        final_code = "/// Created Using: py2java By LP2851\n"
+        if Settings.CREATE_SOURCE_COMMENT:
+            final_code += f"/// Source File: {source_file}\n"
+        final_code += code
+        f.write(final_code)
 
 
 def main(files_to_convert: list[str]) -> None:
@@ -45,7 +49,7 @@ def main(files_to_convert: list[str]) -> None:
 
     # logic for moving between classes/files
     code, class_name = out[0] 
-    save_to_file(code, class_name)
+    save_to_file(code, class_name, files_to_convert[0])
 
 
 if __name__ == "__main__":
