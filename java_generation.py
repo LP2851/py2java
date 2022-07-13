@@ -114,7 +114,8 @@ class JavaClassBlock(CodeBlock):
 
         self.class_name = ""
         self.__class_parent = ""
-    
+        
+
     @staticmethod
     def __get_class_details(code: str) -> tuple[str, str | None]:
         class_name_and_beyond = code.split(" ")[1]
@@ -126,13 +127,17 @@ class JavaClassBlock(CodeBlock):
         return class_name_and_inherit[0], None
 
     def add_line(self, line: LineData) -> bool:
+        is_start_line = False
         if self.__tab_count == -1:
             self.__tab_count = line.get_num_tabs()
+            is_start_line = True
             if self.__tab_count == 0:
                 self.__importer = JavaImportBlock()
-        
-        if not line.get_num_tabs() >= self.__tab_count:
-            return False
+                
+        if not is_start_line:
+            if not line.get_num_tabs() >= self.__tab_count:
+                self.is_complete = True
+                return False
 
         
         if self.__is_complete:
@@ -154,6 +159,8 @@ class JavaClassBlock(CodeBlock):
 
         # CHECK IS CLASS DEF
         if line.get_what_is_line() is DataCodes.CLASS_DEF:
+            if self.class_name != "":
+                return False
             self.class_name, self.__class_parent = self.__get_class_details(line.line.strip())
             self.code_lines.append(line)
             return True
@@ -274,19 +281,19 @@ class JavaClassBlock(CodeBlock):
 class JavaGenerator:
 
     COMMENT_PREFIX = "// "
-    TODO_PREFIX = "// TODO: "
+    TODO_PREFIX = "TODO: "
 
     def __init__(self, line_data: list[LineData], auto_run_processing:bool=True) -> None:
         self.__code: list[LineData] = line_data
         self.__import_block = JavaImportBlock()
-        self.__code_segments = []
+        self.__code_segments = list()
 
         if auto_run_processing:
             self.process_code()
 
     def process_code(self) -> None:
         current_block: CodeBlock = None
-        unclaimed_modifers: list[LineData] = []
+        unclaimed_modifers: list[LineData] = list()
         for line in self.__code:
             what_is_line = line.get_what_is_line()
             
@@ -295,8 +302,7 @@ class JavaGenerator:
                 self.__import_block.add_line(line)
                 continue
             if current_block:
-                success = current_block.add_line(line)
-                if success: 
+                if current_block.add_line(line): 
                     continue
             current_block = None
             # UNKNOWN
@@ -306,11 +312,12 @@ class JavaGenerator:
                 continue
 
             # CLASS
-            if what_is_line == DataCodes.CLASS_DEF:
+            if what_is_line is DataCodes.CLASS_DEF:
                 current_block = JavaClassBlock(self.__import_block)
                 self.__code_segments.append(current_block)
                 if not current_block.add_line(line):
                     print("SOMETHING WENT HORRIBLY WRONG")
+                    print(line.line)
                     return
                 continue
             # FUNCTION

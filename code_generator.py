@@ -79,11 +79,11 @@ class CodeGenerator:
 
         ]
         '''
-
-        out = ""
+        
         for classes in range(len(code)):
+            out = ""
             for c in code[classes][0]: 
-               out += c + "\n"
+                out += c + "\n"
             self.__outputs.append((out, code[classes][1]))
 
         if Settings.VERBOSE:

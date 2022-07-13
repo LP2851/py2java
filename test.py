@@ -7,3 +7,7 @@ class Test:
     and something else
     """
     pass
+
+class Test2:
+    # dnsanmklsd
+    pass

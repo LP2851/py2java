@@ -48,8 +48,9 @@ def main(files_to_convert: list[str]) -> None:
     out = code_gen.get_output() # list[tuple[code, class_name]]
 
     # logic for moving between classes/files
-    code, class_name = out[0] 
-    save_to_file(code, class_name, files_to_convert[0])
+    for (code, class_name) in out:
+        save_to_file(code, class_name, files_to_convert[0])
+
 
 
 if __name__ == "__main__":
