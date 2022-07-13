@@ -2,4 +2,4 @@ class Settings:
     NEWLINES_BEFORE_COMMENT_BLOCK = True
     NEWLINES_BEFORE_CLASSES_AND_FUNCTIONS = True
 
-    
+    VERBOSE = True
