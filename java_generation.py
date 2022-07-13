@@ -46,7 +46,7 @@ class JavaImportBlock(CodeBlock):
         return True
 
     def generate_code(self) -> list[str]:
-        return ["# WIP: IMPORTS CODE"]
+        return ["// WIP: IMPORTS CODE"]
 
 
 class JavaCommentBlock(CodeBlock):
@@ -112,7 +112,7 @@ class JavaClassBlock(CodeBlock):
         
         self.__is_complete = False
 
-        self.__class_name = ""
+        self.class_name = ""
         self.__class_parent = ""
     
     @staticmethod
@@ -154,7 +154,7 @@ class JavaClassBlock(CodeBlock):
 
         # CHECK IS CLASS DEF
         if line.get_what_is_line() is DataCodes.CLASS_DEF:
-            self.__class_name, self.__class_parent = self.__get_class_details(line.line.strip())
+            self.class_name, self.__class_parent = self.__get_class_details(line.line.strip())
             self.code_lines.append(line)
             return True
         # CHECK IS FUNC DEF
@@ -191,7 +191,7 @@ class JavaClassBlock(CodeBlock):
         if self.__is_static:
             out += "static "
         
-        out += "class " + self.__class_name + " "
+        out += "class " + self.class_name + " "
 
         if self.__class_parent:
             out += "extends " + self.__class_parent + " "
@@ -319,9 +319,29 @@ class JavaGenerator:
             # COMMENT/BLOCK
             
          
-    def get_generated_code(self) -> list[str]:
-        out = self.__import_block.generate_code()
+    def get_generated_code(self) -> list[tuple[str, str]]:
+        # out = self.__import_block.generate_code()
+        out = []
+        current_block = None
+        missing_blocks = set()
+        first_class = None
         for block in self.__code_segments:
-            out += block.generate_code()
+            if type(block) is JavaClassBlock:
+                current_block = block
+                if not first_class:
+                    first_class = current_block
+                out.append((block.generate_code(), current_block.class_name))
+                continue
+            if not current_block:
+                missing_blocks.add(len(out))
+                out.append((block.generate_code(), None))
+                continue
+            out.append((block.generate_code(), current_block.class_name))
+
+        
+        for block in missing_blocks:
+            code, _ = out[block]
+            out[block] = (code, first_class)
+
         
         return out

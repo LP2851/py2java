@@ -1,7 +1,9 @@
 import sys
 import os.path
+from os import makedirs
 from code_generator import CodeGenerator
 import generate_java
+from settings import Settings
 
 def is_valid_file(filename: str) -> bool:
     if not filename.endswith(".py"):
@@ -26,13 +28,24 @@ def get_file_data(file: str) -> list[str]:
         out = f.readlines()
     return out
 
+def save_to_file(code:str, class_name:str,) -> None:
+    if not os.path.exists(Settings.OUTPUT_FOLDER_NAME):
+        makedirs(Settings.OUTPUT_FOLDER_NAME)
+    with open(f"{Settings.OUTPUT_FOLDER_NAME}{class_name}.java", "w") as f:
+        f.write(code)
+
+
 def main(files_to_convert: list[str]) -> None:
     files_to_convert = validate_python_files(files_to_convert)
 
     # generate_java.JavaGenerator.run("Main")
     code_gen = CodeGenerator()
     code_gen.input_code(get_file_data(files_to_convert[0]))
-    code_gen.generate_output()
+    out = code_gen.get_output() # list[tuple[code, class_name]]
+
+    # logic for moving between classes/files
+    code, class_name = out[0] 
+    save_to_file(code, class_name)
 
 
 if __name__ == "__main__":

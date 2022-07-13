@@ -3,3 +3,5 @@ class Settings:
     NEWLINES_BEFORE_CLASSES_AND_FUNCTIONS = True
 
     VERBOSE = True
+
+    OUTPUT_FOLDER_NAME = "./out/"

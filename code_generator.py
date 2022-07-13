@@ -15,7 +15,7 @@ class CodeGenerator:
         self.__input: str | None = None
         self.__code_lines = None
         self.__lines_tab_count = None
-        self.__output: str | None = None
+        self.__outputs: list[tuple[str, str]] | None = None
 
         self.__in_multiline_comment = False
 
@@ -59,26 +59,47 @@ class CodeGenerator:
                 gen = JavaGenerator(self.__line_data)
         return gen 
 
-    def generate_output(self) -> JavaGenerator:
+    def generate_output(self) -> None:
         if not self.__input:
             return
 
         self.__pre_process_code()
         gen = self.__process_code()
         code = gen.get_generated_code()
-        
-        if Settings.VERBOSE:
-            print()
-            for line in code:
-                print(line)
 
-    def get_output(self) -> str | None:
+        # self.__output = "\n".join(code)
+        self.__outputs = []
+
+        '''
+        code = [
+            (
+                [, , , ], # code lines
+                class_name
+            ), # EACH TUPLE IS A CLASS FILE
+
+        ]
+        '''
+
+        out = ""
+        for classes in range(len(code)):
+            for c in code[classes][0]: 
+               out += c + "\n"
+            self.__outputs.append((out, code[classes][1]))
+
+        if Settings.VERBOSE:
+            for output in self.__outputs:
+                print()
+                print("FILE: " + output[1]+".java")
+                print(output[0])
+        
+
+    def get_output(self) -> list[tuple[str, str]]:
         if not self.__input:
             return None
-        if self.__output:
-            return self.__output
+        if self.__outputs:
+            return self.__outputs
         self.generate_output()
-        return self.__output
+        return self.__outputs
 
     @staticmethod
     def recode(input: str, from_language: str = "py3.10", to_language: str = "java") -> None:
