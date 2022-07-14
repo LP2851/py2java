@@ -4,6 +4,7 @@ from enum import Enum, auto
 CODE_CONVERTER_COMMANDS = {
     "###STATIC",
     "###OVERRIDE",
+    "###ABSTRACT"
 }
 
 class DataCodes(Enum):
@@ -32,6 +33,8 @@ class DataCodes(Enum):
 
     PASS_KEYWORD = auto()
 
+    ANNOTATION = auto()
+
     
 
 class LineData: 
@@ -42,8 +45,7 @@ class LineData:
 
     @staticmethod
     def __check_is_converter_code_comment(line: str) -> bool:
-        possible_commands = ["###STATIC"]
-        return line.strip() in possible_commands
+        return line.strip() in CODE_CONVERTER_COMMANDS
     
     @staticmethod
     def __check_is_comment(line: str) -> bool:
@@ -69,7 +71,13 @@ class LineData:
 
     @staticmethod
     def __check_is_pass_keyword(line: str) -> bool:
-        return line.strip() == "pass" 
+        return line.strip() == "pass"
+
+    @staticmethod
+    def __check_is_annotation(line: str) -> bool:
+        regex = "@[a-zA-Z0-9]+"
+        return re.match(regex, line.strip())
+
     
 
     __CHECK_FUNCTIONS = {
@@ -80,6 +88,8 @@ class LineData:
         __check_is_complex_import: DataCodes.IMPORT_COMPLEX,
         __check_is_class_def: DataCodes.CLASS_DEF,    
         __check_is_pass_keyword: DataCodes.PASS_KEYWORD,    
+
+        __check_is_annotation: DataCodes.ANNOTATION,
     }
 
     def get_num_tabs(self) -> int:

@@ -108,6 +108,7 @@ class JavaClassBlock(CodeBlock):
 
         self.__is_static = False
         self.__is_abstract = False
+        self.__is_override = False
         self.__visability = 0
         
         self.__is_complete = False
@@ -145,6 +146,16 @@ class JavaClassBlock(CodeBlock):
                 return False
 
         # CHECKS FOR COMMENT COMMANDS
+        if line.get_what_is_line() is DataCodes.CONVERTER_CODE_COMMENT:
+            print("FDKANJNSDN")
+            match line.line:
+                case "###STATIC":
+                    self.__is_static = True
+                case "###OVERRIDE":
+                    self.__is_override = True
+                case "###ABSTRACT":
+                    self.__is_abstract = True
+            return True
 
         # HANDS OFF TO CURRENT BLOCK IF IN USE
         if self.__current_block:
@@ -237,7 +248,7 @@ class JavaGenerator:
 
     def process_code(self) -> None:
         current_block: CodeBlock = None
-        unclaimed_modifers: list[LineData] = list()
+        unclaimed_modifers: list[LineData] = None
         for line in self.__code:
             what_is_line = line.get_what_is_line()
             
@@ -246,8 +257,14 @@ class JavaGenerator:
                 self.__import_block.add_line(line)
                 continue
             if current_block:
+                if what_is_line is DataCodes.CONVERTER_CODE_COMMENT:
+                    if not unclaimed_modifers:
+                        unclaimed_modifers = []
+                    unclaimed_modifers.append(line)
+                    continue
                 if current_block.add_line(line): 
                     continue
+
             current_block = None
             # UNKNOWN
             if what_is_line is DataCodes.UNKNOWN:
@@ -255,9 +272,22 @@ class JavaGenerator:
                 self.__code_segments.append(segment)
                 continue
 
+            # MODIFIER
+            if what_is_line is DataCodes.CONVERTER_CODE_COMMENT:
+                if not unclaimed_modifers:
+                    unclaimed_modifers = []
+                unclaimed_modifers.append(line)
+                continue
+
             # CLASS
             if what_is_line is DataCodes.CLASS_DEF:
                 current_block = JavaClassBlock(self.__import_block)
+
+                if unclaimed_modifers:
+                    for l in unclaimed_modifers:
+                        current_block.add_line(l)
+                    unclaimed_modifers = None
+
                 self.__code_segments.append(current_block)
                 if not current_block.add_line(line):
                     print("SOMETHING WENT HORRIBLY WRONG")
@@ -266,7 +296,8 @@ class JavaGenerator:
                 continue
             # FUNCTION
             # VARIABLE
-            # MODIFIER
+            
+                
             # COMMENT/BLOCK
             
          
