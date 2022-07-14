@@ -1,4 +1,4 @@
-class Test:
+class ClassWithComments:
     # this is a test comment
     
     """
@@ -8,6 +8,14 @@ class Test:
     """
     pass
 
-class Test2:
+class ClassThatExtends(ClassWithComments):
     # dnsanmklsd
+    pass
+
+###STATIC
+class StaticClass:
+    pass
+
+###ABSTRACT
+class AbstractClass:
     pass
